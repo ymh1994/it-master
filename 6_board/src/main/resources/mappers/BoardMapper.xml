@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="global.sesoc.test6.dao.BoardMapper">
+
+
+<insert id="insert" parameterType="Board">
+INSERT INTO BOARD
+(
+boardseq
+,userid
+,title
+,content
+,regdate
+<if test="originalfile != null">
+,originalfile
+,savedfile
+</if>
+)
+VALUES
+(
+board_seq.nextval
+,#{userid}
+,#{title}
+,#{content}
+,sysdate
+<if test="originalfile != null">
+,#{originalfile}
+,#{savedfile}
+</if>
+)
+</insert>
+
+<!-- RowBounds를 사용하는 케이스 -->
+<select id="selectAll"  parameterType="map" resultType="Board">
+select 
+boardseq,
+userid,
+title,
+content,
+to_char(regdate,'YYYY-MM-DD')  as regdate,
+viewcount,
+favorite,
+originalfile,
+savedfile   
+from board
+<if test="searchItem !=null">
+where ${searchItem} like '%'||#{searchWord}||'%' 
+</if>
+order by boardseq desc
+
+</select>
+
+
+
+
+<!--  
+<select id="selectAll"  parameterType="map" resultType="Board">
+select * from (
+select rownum as num ,b.* from 
+(select 
+boardseq,
+userid,
+title,
+content,
+to_char(regdate,'YYYY-MM-DD')  as regdate,
+viewcount,
+favorite,
+originalfile,
+savedfile   
+from board
+
+<if test="searchItem !=null">
+where ${searchItem} like '%'||#{searchWord}||'%' 
+</if>
+order by boardseq desc) b)
+
+where num between #{srow} and #{erow}
+
+</select>
+
+
+-->
+
+
+<select id="selectOne" parameterType="int" resultType="Board">
+select * from board where boardseq=#{boardseq}
+</select>
+
+<update id="viewcountUp" parameterType="Board" >
+update board set viewcount=#{viewcount} where boardseq=#{boardseq}
+</update>
+
+
+<delete id="delete">
+delete from board where boardseq=#{boardseq}
+</delete>
+
+<update id="update" parameterType="Board">
+
+update board set 
+
+
+<if test="originalfile!=null">
+savedfile=#{savedfile},
+originalfile=#{originalfile},
+</if>
+
+title=#{title},
+content = #{content},
+regdate = sysdate
+where boardseq= #{boardseq}
+
+</update>
+
+
+<!-- 전체 글개수 조회 -->
+<select id="getBoardCount" parameterType="map" resultType="int">
+
+select count(*) from board 
+<if test="searchItem!=null">
+where ${searchItem} LIKE '%'||#{searchWord}||'%'
+</if>
+
+</select>
+
+
+<insert id="insertReply" parameterType="Reply">
+
+insert into replyinfo
+(
+replyseq,
+boardseq,
+userid,
+content,
+regdate
+)
+values
+(
+reply_seq.nextVal,
+#{boardseq},
+#{userid},
+#{content},
+sysdate
+)
+
+</insert>
+
+<select id="selectReply" resultType="Reply" parameterType="int">
+
+select 
+replyseq,
+boardseq,
+userid,
+content,
+regdate
+from
+ replyinfo 
+ where boardseq=#{boardseq}
+ order by regdate desc
+
+</select>
+
+
+
+<delete id="deleteAllReply" parameterType="int">
+delete replyinfo where boardseq=#{boardseq}
+</delete>
+
+
+
+
+<delete id="updateDeleteReply" parameterType="int">
+delete replyinfo where replyseq=#{replyseq}
+</delete>
+
+
+<!-- <update id="updateDeleteReply" parameterType="int">
+update replyinfo set content='삭제된 댓글입니다' where replyseq=#{replyseq}
+
+</update> -->
+
+
+
+<update id="updateReply" parameterType="Reply">
+update replyinfo set content=#{content} where replyseq=#{replyseq}
+</update>
+
+
+
+
+
+</mapper>

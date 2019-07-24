@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="global.sesoc.test6.dao.MemberMapper">
+	<insert id="insert" parameterType="Member">
+	insert into member
+	values
+	(
+		#{userid},
+		#{userpwd},
+		#{username},
+		#{phone}, 
+		#{gender},
+		#{email},
+		#{address}
+	)
+	</insert>
+
+
+
+   <!-- 이거는 안쓸건데 코드만남겨두기 뱅꾜스루타메 
+     <select id="login2" resultType="Member">
+     select * from member
+     where userid=#{userid} and userpwd=#{userpwd}
+    </select>
+   -->
+
+<!-- 맵을이용한걸로 할거임 -->
+   <select id="login" resultType="Member" parameterType="map">
+     select * from member
+     where userid=#{userid} and userpwd=#{userpwd}
+    </select>
+
+  
+
+	<delete id="delete" parameterType="map">
+	delete from member where userid=#{userid} and userpwd=#{userpwd}
+	</delete>
+	
+
+	<update id="update" parameterType="Member">
+	update member set userpwd=#{userpwd},username=#{username},phone=#{phone},gender=#{gender},email=#{email},address=#{address} where userid=#{userid}
+	
+	</update>
+</mapper>

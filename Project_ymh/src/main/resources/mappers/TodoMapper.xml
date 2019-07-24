@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="global.sesoc.ymh.dao.TodoListMapper">
+  
+  <insert id="insert" parameterType="Todo">
+INSERT INTO TODO
+(
+todoseq
+,userid
+,tododata
+,regdate
+,importance
+,deadline
+,comments
+)
+VALUES
+(
+todoSeq.nextVal
+,#{userId}
+,#{todoData}
+,sysdate
+,#{importance}
+,#{deadLine}
+,#{comments}
+)
+  </insert>
+  
+ <select id="selectAll" parameterType="map" resultType="Todo">
+ select
+  todoseq,userid,tododata,to_char(regdate,'YYYY-MM-DD')  as regdate,importance,to_char(deadline,'YYYY-MM-DD')  as deadline,comments
+  from todo where userId=#{userId}  
+  <if test="searchItem !=null">
+ and ${searchItem} like '%'||#{searchWord}||'%' 
+</if> 
+order by deadline asc
+ </select> 
+  
+  
+  <delete id="delete" parameterType="int">
+ delete from todo where todoSeq=#{todoSeq}  
+  </delete>
+  
+ <select id="getCount" parameterType="map" resultType="int">
+ select count(*) from todo where 
+ <if test="searchItem!=null">
+  ${searchItem} LIKE '%'||#{searchWord}||'%' and
+</if>
+  userId=#{userId}
+ </select> 
+  
+  
+  </mapper>
